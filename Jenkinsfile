@@ -1,33 +1,34 @@
-node {
-    def app
+pipeline {
+    agent any
 
-    stage('Clone repository') {
-        /* Cloning the Repository to our Workspace */
-
-        checkout scm
-    }
-
-    stage('Build image') {
-        /* This builds the actual image */
-
-        app = docker.build("saijagruthi2003/pythonwebapp")
-    }
-
-    stage('Test image') {
-        
-        app.inside {
-            echo "Tests passed"
+    stages {
+        stage('Test') {
+            steps {
+                script {
+                    // Check if Docker is available
+                    sh 'sudo docker info'
+                }
+            }
         }
-    }
 
-    stage('Push image') {
-        /* 
-			You would need to first register with DockerHub before you can push images to your account
-		*/
-        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
-            } 
-                echo "Trying to Push Docker Build to DockerHub"
+        stage('Build') {
+            steps {
+                script {
+                    // Build the Docker image from a Java file
+                    sh 'docker build -t my-java-app .'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Run a container using the Docker image
+                    sh 'docker run -d --name myapp my-java-app'
+                    // Fetch the output of the java script
+		    sh 'docker logs myapp'
+                }
+            }
+        }
     }
 }
