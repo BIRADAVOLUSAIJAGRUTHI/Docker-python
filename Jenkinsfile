@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     // Check if Docker is available
-                    sh 'sudo docker info'
+                    bat 'docker info'
                 }
             }
         }
@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image from a Java file
-                    sh 'docker build -t my-java-app .'
+                    bat 'docker build -t pythonwebapp .'
                 }
             }
         }
@@ -24,9 +24,9 @@ pipeline {
             steps {
                 script {
                     // Run a container using the Docker image
-                    sh 'docker run -d --name myapp my-java-app'
+                    bat 'docker run -d --name python-container pythonwebapp'
                     // Fetch the output of the java script
-		    sh 'docker logs myapp'
+		    bat 'docker logs python-container'
                 }
             }
         }
